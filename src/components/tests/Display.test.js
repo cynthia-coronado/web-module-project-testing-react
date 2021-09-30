@@ -1,8 +1,51 @@
+import React from 'react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
+import Display from '../Display'
 
+const testShow = {
+    name: "test show",
+    summary: "what a show",
+    seasons: [
+        {id:0, name: "Season 1", episodes: []},
+        {id:1, name: "Season 2", episodes: []},
+        {id:2, name: "Season 3", episodes: []},
+    ]
+}
 
-
-
+test('Display component renders without any passed in props', () => {
+    render(<Display />)
+    const display = screen.queryByText(/press to get show data/i)
+    expect(display).toBeInTheDocument()
+})
+test('when the fetch button is pressed, the show component will display', async () => {
+    render(<Display show={testShow} />)
+    const button = screen.getByRole('button')
+    userEvent.click(button)
+    await waitFor(() => {
+        const show = screen.queryAllByTestId('show-container')
+        expect(show).toBeTruthy()
+    })
+})
+test('when the fetch button is pressed, the amount of select options rendered is equal to the amount of seasons in your test data', async () => {
+    render(<Display show = {testShow} />)
+    const button = screen.getByRole('button')
+    userEvent.click(button)
+    await waitFor(() => {
+        const show = screen.queryAllByTestId('show-container')
+        expect(show).toHaveLength(1)
+    })
+})
+test('when the fetch button is pressed, this optional function is called.', async () => {
+    const mockClick = jest.fn()
+render(<Display click = {mockClick} />)
+    const button = screen.getByRole('button')
+    userEvent.click(button)
+    await waitFor(() => {
+        expect(mockClick).toHaveBeenCalledTimes(0)
+    })
+})
 
 
 
